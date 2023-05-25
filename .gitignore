@@ -1,6 +1,6 @@
 # Config files
-.config.json
 .docker-config
 .env.local
+config.json
 yarn-error.log
 node_modules
