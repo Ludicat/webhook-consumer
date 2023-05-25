@@ -1,0 +1,27 @@
+version: '2.2'
+
+services:
+    webhook_dispatcher_node:
+        container_name: ${NODE_CONTAINER_NAME}
+        image: node:18
+        restart: "always"
+        working_dir: /usr/app
+        volumes:
+            - ..:/usr/app/
+        command: bash -c "yarn && npm start"
+        tty: true
+        networks:
+            - internal
+            - reverse_proxy
+        environment:
+            TZ: 'Europe/Paris'
+            ENVIRONMENT: "dev"
+        labels:
+            - "traefik.enable=false"
+
+networks:
+    internal:
+        driver: bridge
+    reverse_proxy:
+        driver: bridge
+        external: true

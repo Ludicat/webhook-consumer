@@ -1,0 +1,6 @@
+# Config files
+.config.json
+.docker-config
+.env.local
+yarn-error.log
+node_modules

@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "name": "garantie",
+  "type": "module",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.3",
+    "axios": "^1.2.6",
+    "dotenv": "^16.0.3",
+    "dotenv-expand": "^10.0.0",
+    "https": "^1.0.0"
+  }
+}
