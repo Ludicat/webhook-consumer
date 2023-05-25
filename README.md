@@ -32,3 +32,21 @@ Run make start
 
 That's all
 You'll find user's original IP in header `X-ORIGINAL-IP`
+
+Please note that container is setup to restart with your system by default.
+
+Troubleshooting
+---------------
+
+This tool has been made to be used out of the box with docker compose.
+Look at the code and adapt along with your needs.
+webhook.ludi.cat just provide a rabbitmq queue, the rest is up to you.
+
+Final word
+==========
+
+This tool is 
+
+**!!! DEFINITIVELY NOT SUPPOSED TO BE USED IN PRODUCTION ENVIRONMENT !!!**
+
+This could expose you to a man in the middle attack, so please take care.
