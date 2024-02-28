@@ -6,6 +6,18 @@ ifneq ("$(wildcard .env.local)","")
 endif
 export
 
+# Determine the executable name based on availability
+EXECUTABLE :=
+ifeq ($(shell command -v $(EXECUTABLE) 2>/dev/null),)
+    ifeq ($(shell command -v docker 2>/dev/null),)
+        $(error Neither $(EXECUTABLE) nor docker is installed. Please install either one.)
+    else
+        EXECUTABLE := docker compose
+    endif
+else
+    EXECUTABLE := $(EXECUTABLE)
+endif
+
 IS_DOCKER := $(shell docker info > /dev/null 2>&1 && echo 1)
 DOCKER_PARAM = --env-file $(DOT_ENV) -f ".docker/docker-compose.yml"
 
@@ -21,24 +33,24 @@ help:
 start: do-init do-start do-finish
 do-start:
 	@echo "$(STEP) Starting up containers... $(STEP)"
-	docker-compose $(DOCKER_PARAM) up -d
+	$(EXECUTABLE) $(DOCKER_PARAM) up -d
 
 stop: do-init do-stop do-finish
 do-stop:
 	@echo "$(STEP) Stopping containers... $(STEP)"
-	docker-compose $(DOCKER_PARAM) stop
+	$(EXECUTABLE) $(DOCKER_PARAM) stop
 
 restart: do-init do-stop do-start do-finish
 
 down: do-init do-down do-finish
 do-down:
 	@echo "$(STEP) Stopping and removing containers... $(STEP)"; \
-	docker-compose $(DOCKER_PARAM) down;
+	$(EXECUTABLE) $(DOCKER_PARAM) down;
 
 logs: do-init do-logs do-finish
 do-logs:
 	@echo "$(STEP) Displaying logs... $(STEP)"; \
-	docker-compose $(DOCKER_PARAM) logs -f --tail="100";
+	$(EXECUTABLE) $(DOCKER_PARAM) logs -f --tail="100";
 
 node: do-init do-node do-finish
 do-node:
