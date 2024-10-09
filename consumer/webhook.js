@@ -12,6 +12,16 @@ const agent = new Agent({
   rejectUnauthorized: false
 });
 
+const getTime = function () {
+  var currentdate = new Date();
+  return currentdate.getFullYear() + "-"
+    + (currentdate.getMonth() + 1) + "-"
+    + currentdate.getDate() + " "
+    + currentdate.getHours() + ":"
+    + currentdate.getMinutes() + ":"
+    + currentdate.getSeconds();
+}
+
 class AmpqMessage {
   constructor(object) {
     this.target = object.target;
@@ -33,26 +43,28 @@ export default {
     openChannel(queues)
       .then(function (channel) {
         for (const queue of queues) {
-          console.log('[RABBITMQ] Setup queue ' + queue);
+          console.log(getTime() + '[RABBITMQ] Setup queue ' + queue);
 
           channel.consume(queue, function (msg) {
+            console.log(getTime() + " - Received message from queue " + queue);
+
             var message = false;
             try {
               message = new AmpqMessage(JSON.parse(msg.content));
             } catch (e) {
-              console.error('[RABBITMQ] Message parsing error', e.message);
+              console.error(getTime() + ' - [RABBITMQ] Message parsing error', e.message);
               return;
             }
 
             if (!message) {
-              console.error('[RABBITMQ] Message is empty');
+              console.error(getTime() + ' - [RABBITMQ] Message is empty');
               return;
             }
 
             // Check message integrity, it should contain all required fields
             for (const prop of ['target', 'query', 'request', 'headers', 'method', 'callback', 'ip']) {
               if (!message.hasOwnProperty(prop)) {
-                console.error('[RABBITMQ] Message does not contain "'+prop+'" field');
+                console.error(getTime() + ' - [RABBITMQ] Message does not contain "'+prop+'" field');
                 return;
               }
             }
@@ -64,7 +76,7 @@ export default {
             if (message.headers.host instanceof Array) {
               message.headers.host = message.headers.host[0];
             }
-            console.log("[x] Forward to " + message.target + query);
+            console.log(getTime() + " - [x] " + message.method + " Forward to " + message.target + query);
 
             // Update trace
             WebhookCallback(message.callback, {state: 'received'});
@@ -84,7 +96,7 @@ export default {
 
             axios(data)
               .then(function (response) {
-                console.debug('[webhook consumer '+queue+']', response.status)
+                console.debug(getTime() + '[webhook consumer '+queue+']', response.status)
 
                 // Push response to webhook
                 WebhookCallback(message.callback, {
@@ -95,7 +107,7 @@ export default {
               })
               .catch(function (e) {
                 console.error(
-                  '[webhook consumer '+queue+'] [ERROR]',
+                  getTime() + '[webhook consumer '+queue+'] [ERROR]',
                   e.response ? e.response.status : 'no response status',
                   e.response ? e.response.message : 'no response message',
                   e.response ? JSON.stringify(e.response.data) : 'no response data',
@@ -111,11 +123,11 @@ export default {
             ;
           }, {
             noAck: true
-          })
+          });
         }
       })
       .catch(function (e) {
-        console.log('[RABBITMQ] Setup queue ' + queue + ' error ', e);
+        console.log(getTime() + '[RABBITMQ] Setup queue error ', e);
       })
     ;
   }
