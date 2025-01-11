@@ -12,7 +12,7 @@ export const openChannel = function (queues) {
         + ':'
         + config.RABBITMQ_PORT
         +'/'
-        // It's vhost value, but here it's the same as username for convinience
+        // It's vhost value, but here it's the same as username for convenience
         + config.RABBITMQ_USER
     ;
     

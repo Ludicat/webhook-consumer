@@ -1,13 +1,15 @@
 import axios from "axios";
 import {Agent} from 'https';
+import { getTime } from "./tools.js";
 
 // Create axios agent
 const agent = new Agent({
-  // We asume that it's ok in dev environment
+  // We assume that it's ok in dev environment
   rejectUnauthorized: false
 });
 
 export const WebhookCallback = async function (url, state) {
+  console.log(getTime() + '[webhook callback] [INFO] Sending data to ' + url);
   // Update trace
   return await axios({
     method: 'post',
@@ -22,6 +24,7 @@ export const WebhookCallback = async function (url, state) {
   })
     .catch(function (e) {
       console.error(
+        getTime() +
         '[webhook callback] [ERROR]',
         e.response ? e.response.status : 'no response status',
         e.response ? e.response.message : 'no response message',

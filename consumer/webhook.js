@@ -3,6 +3,7 @@ import {Agent} from 'https';
 import axios from "axios";
 import { openChannel } from "./channel.js";
 import { WebhookCallback } from "./callback.js";
+import { getTime } from "./tools.js";
 
 // Fetch json queue parameters, path from root
 const queues = JSON.parse(readFileSync('./config.json'));
@@ -11,16 +12,6 @@ const agent = new Agent({
   // We asume that it's ok in dev environment
   rejectUnauthorized: false
 });
-
-const getTime = function () {
-  var currentdate = new Date();
-  return currentdate.getFullYear() + "-"
-    + (currentdate.getMonth() + 1) + "-"
-    + currentdate.getDate() + " "
-    + currentdate.getHours() + ":"
-    + currentdate.getMinutes() + ":"
-    + currentdate.getSeconds();
-}
 
 class AmpqMessage {
   constructor(object) {
